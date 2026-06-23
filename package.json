@@ -3,13 +3,11 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
-  "scripts": {
-    "dev": "vite --host",
-    "build": "tsc -b && vite build",
-    "preview": "vite preview --host",
-    "start": "serve -s dist -l $PORT",
-    "lint": "eslint ."
-  },
+"scripts": {
+  "dev": "vite --host",
+  "build": "tsc -b && vite build",
+  "start": "vite preview --host --port $PORT"
+},
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.15",
     "@radix-ui/react-dropdown-menu": "^2.1.2",

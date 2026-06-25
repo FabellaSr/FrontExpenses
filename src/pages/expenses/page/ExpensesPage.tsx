@@ -10,16 +10,19 @@ import NotFoundPage from '@/pages/NotFoundPage';
 import type { Expense, UseExpensesParams } from '@/interfaces';
 import { useCreateExpense } from '@/pages/expenses/hooks/useCreateExpense';
 import { useMembers } from '@/pages/members/hooks/useMembers';
+import { useAuth } from '@/auth/useAuth';
+import { useUpdateExpense } from '../hooks/useUpdateExpense'; 
 
 const PAGE_SIZE = 20;
 
 export const ExpensesPage = () => {
   const [open, setOpen] = useState(false);
   const [page, setPage] = useState(1);
-
+  const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
   const now = new Date(); 
   const params: UseExpensesParams = { month: now.getMonth() + 1, year: now.getFullYear() };
-
+  const { user } = useAuth();  // ← usuario logueado
+  const updateExpenseMutation = useUpdateExpense();  // ← nuevo
 
   const { data: expenses, error } = useExpenses(params);
   const { data: categories } = useCategories();
@@ -39,21 +42,47 @@ export const ExpensesPage = () => {
   // Paginación simple en cliente
   const totalPages = Math.ceil(expenses.length / PAGE_SIZE);
   const paginated = expenses.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
-  const handleSubmit = async (expenseLike: Partial<Expense>) => {
-    const formData = new FormData();
-    formData.append('date', expenseLike.date!);
-    formData.append('categoryId', expenseLike.categoryId!);
-    formData.append('concept', expenseLike.concept!);
-    formData.append('amount', String(expenseLike.amount));
 
+
+  const handleEdit = (expense: Expense) => {
+    setEditingExpense(expense);
+    setOpen(true);
+  };
+
+  const handleCloseDialog = (value: boolean) => {
+    setOpen(value);
+    if (!value) setEditingExpense(null);  // limpiar al cerrar
+  };
+
+  const handleSubmit = async (expenseLike: Partial<Expense>) => {
     try {
-      await createExpenseMutation.mutateAsync(formData);
-      toast.success('Gasto creado correctamente');
+      if (editingExpense) {
+        // Modo edición
+        await updateExpenseMutation.mutateAsync({
+          id: editingExpense.id,
+          data: {
+            date: expenseLike.date!,
+            categoryId: expenseLike.categoryId!,
+            concept: expenseLike.concept!,
+            amount: expenseLike.amount,
+          },
+        });
+        toast.success('Gasto actualizado correctamente');
+      } else {
+        // Modo creación — igual que antes
+        const formData = new FormData();
+        formData.append('date', expenseLike.date!);
+        formData.append('categoryId', expenseLike.categoryId!);
+        formData.append('concept', expenseLike.concept!);
+        formData.append('amount', String(expenseLike.amount));
+        await createExpenseMutation.mutateAsync(formData);
+        toast.success('Gasto creado correctamente');
+        setPage(1);
+      }
       setOpen(false);
-      setPage(1); // volver a la primera página al crear
-    } catch (error) {
-      console.log(error);
-      toast.error('Error al crear el gasto');
+      setEditingExpense(null);
+    } catch {
+      toast.error(editingExpense ? 'Error al editar el gasto' : 'Error al crear el gasto');
     }
   };
 
@@ -88,16 +117,28 @@ export const ExpensesPage = () => {
                       <th>Concepto</th>
                       <th>Usuario</th>
                       <th className="text-right">Monto</th>
+                      <th></th> 
                     </tr>
                   </thead>
                   <tbody>
-                    {paginated.map((e) => ( 
+                    {paginated.map((e) => (
                       <tr key={e.id} className="border-t">
                         <td className="py-2">{e.date}</td>
                         <td>{categoryMap[e.categoryId] ?? '—'}</td>
                         <td>{e.concept}</td>
                         <td>{userMap[e.userId] ?? '—'}</td>
                         <td className="text-right">${e.amount.toLocaleString()}</td>
+                        <td className="text-right">
+                          {e.userId === user?.id && (   // ← solo muestra si es del usuario logueado
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleEdit(e)}
+                            >
+                              Editar
+                            </Button>
+                          )}
+                        </td>
                       </tr>
                     ))}
                   </tbody>
@@ -137,10 +178,16 @@ export const ExpensesPage = () => {
 
       <ExpenseFormDialog
         open={open}
-        onOpenChange={setOpen}
+        onOpenChange={handleCloseDialog}
         categories={categories}
         onSubmit={handleSubmit}
-        isPending={createExpenseMutation.isPending}
+        isPending={createExpenseMutation.isPending || updateExpenseMutation.isPending}
+        initialValues={editingExpense ? {    
+          date: editingExpense.date,
+          categoryId: editingExpense.categoryId,
+          concept: editingExpense.concept,
+          amount: editingExpense.amount,
+        } : undefined}
       />
     </div>
   );

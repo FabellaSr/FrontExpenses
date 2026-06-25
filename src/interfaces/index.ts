@@ -108,6 +108,9 @@ export interface ExpensesFormDialog {
 
   onSubmit: (expenseLike: Partial<Expense>) => Promise<void>;
   onOpenChange: (open: boolean) => void;
+
+   initialValues?: Partial<ExpenseFormValues>; 
+
 }
 export interface Expense {
   id: string;

@@ -20,6 +20,7 @@ import {
 } from '@/components/ui/select';
 
 import type { ExpenseFormValues, ExpensesFormDialog } from '@/interfaces';
+import { useEffect } from 'react';
 
 
 export function ExpenseFormDialog({
@@ -28,6 +29,7 @@ export function ExpenseFormDialog({
     categories,
     onSubmit,
     isPending,
+    initialValues,
 }: ExpensesFormDialog) {
     const today = new Date().toISOString().split('T')[0];
     const {
@@ -37,7 +39,7 @@ export function ExpenseFormDialog({
         watch,
         reset,
     } = useForm<ExpenseFormValues>({
-        defaultValues: {
+        defaultValues: initialValues ?? {
             date: today,
             categoryId: '',
             concept: '',
@@ -56,16 +58,16 @@ export function ExpenseFormDialog({
         });
         onOpenChange(false);
     };
-
+    useEffect(() => {
+        if (initialValues) reset(initialValues);
+    }, [initialValues, reset]);
     return (
         <Dialog
             open={open}
             onOpenChange={onOpenChange}>
             <DialogContent className="sm:max-w-[500px]">
                 <DialogHeader>
-                    <DialogTitle>
-                        Nuevo gasto
-                    </DialogTitle>
+                      <DialogTitle>{initialValues ? 'Editar gasto' : 'Nuevo gasto'}</DialogTitle>
                 </DialogHeader>
 
                 <form

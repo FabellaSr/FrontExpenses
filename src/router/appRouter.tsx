@@ -16,7 +16,6 @@ const RegisterPage       = lazy(() => import('@/pages/auth/page/RegisterPage'));
 const AdminDashboardPage = lazy(() => import('@/pages/admin/page/AdminDashboardPage'));
 const MembersPage        = lazy(() => import('@/pages/members/page/MembersPage'));
 const MonthlyClosePage   = lazy(() => import('@/pages/monthlyClose/page/MonthlyClosePage'));
-const InstalacionesPage  = lazy(() => import('@/pages/instalaciones/page/InstalacionesPage').then(m => ({ default: m.InstalacionesPage })));
 const withSuspense = (element: React.ReactNode) => (
   <Suspense fallback={<CustomFullScreenLoading />}>
     {element}
@@ -30,8 +29,7 @@ export const appRouter = createBrowserRouter([
     children: [
       { index: true,       element: withSuspense(<DashboardPage />) },
       { path: 'expenses',  element: withSuspense(<ExpensesPage />) },
-      { path: 'reports',   element: withSuspense(<ReportsPage />) },
-      { path: 'instalaciones',  element: withSuspense(<InstalacionesPage />) },
+      { path: 'reports',   element: withSuspense(<ReportsPage />) }, 
     ],
   },
   {

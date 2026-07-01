@@ -1,11 +1,12 @@
 import { NavLink } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import { LayoutDashboard, Users, CalendarCheck } from 'lucide-react';
+import { LayoutDashboard, Users, CalendarCheck, OrigamiIcon } from 'lucide-react';
 
 const items = [
   { to: '/admin', label: 'Resumen', icon: LayoutDashboard, end: true },
   { to: '/admin/members', label: 'Miembros', icon: Users },
   { to: '/admin/monthly-close', label: 'Cierre mensual', icon: CalendarCheck },
+  { to: '/admin/organizaciones', label: 'Organizaciones', icon: OrigamiIcon },
 ];
 
 export function Sidebar() {

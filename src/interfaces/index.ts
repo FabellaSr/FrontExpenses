@@ -154,6 +154,12 @@ export interface SharedFund {
   targetAmount: number;
   createdAt: string;
 }
+
+export interface Organization{
+  id:number;
+  organization: string;
+  status: boolean;
+}
 // export interface ExpensesFormDialog {
 //     open: boolean;
 //     expense: Expense;

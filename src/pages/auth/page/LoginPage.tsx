@@ -16,7 +16,7 @@ import {
 } from '@/components/ui/select';
 
 export default function LoginPage() {
-  const [email, setEmail] = useState('admin2@demo.com');
+  const [email, setEmail] = useState('aldi2@demo.com');
   const [password, setPassword] = useState('ferminfabella4$');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();

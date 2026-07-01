@@ -5,6 +5,7 @@ import AuthLayout from '@/pages/layouts/AuthLayout';
 import AdminLayout from '@/pages/layouts/AdminLayout';
 import { ProtectedRoute } from '@/auth/ProtectedRoute';
 import { CustomFullScreenLoading } from '@/components/custom/CustomFullScreenLoading';
+import OrganizationsPage from '@/pages/organization/page/OrganizationPage';
 // FIX: lazy loading — cada página se carga solo cuando el usuario la visita,
 // reduciendo el bundle inicial.
 const DashboardPage      = lazy(() => import('@/pages/dashboard/page/DashboardPage'));
@@ -15,7 +16,7 @@ const RegisterPage       = lazy(() => import('@/pages/auth/page/RegisterPage'));
 const AdminDashboardPage = lazy(() => import('@/pages/admin/page/AdminDashboardPage'));
 const MembersPage        = lazy(() => import('@/pages/members/page/MembersPage'));
 const MonthlyClosePage   = lazy(() => import('@/pages/monthlyClose/page/MonthlyClosePage'));
-
+const InstalacionesPage  = lazy(() => import('@/pages/instalaciones/page/InstalacionesPage').then(m => ({ default: m.InstalacionesPage })));
 const withSuspense = (element: React.ReactNode) => (
   <Suspense fallback={<CustomFullScreenLoading />}>
     {element}
@@ -30,6 +31,7 @@ export const appRouter = createBrowserRouter([
       { index: true,       element: withSuspense(<DashboardPage />) },
       { path: 'expenses',  element: withSuspense(<ExpensesPage />) },
       { path: 'reports',   element: withSuspense(<ReportsPage />) },
+      { path: 'instalaciones',  element: withSuspense(<InstalacionesPage />) },
     ],
   },
   {
@@ -52,6 +54,7 @@ export const appRouter = createBrowserRouter([
           { index: true,           element: withSuspense(<AdminDashboardPage />) },
           { path: 'members',       element: withSuspense(<MembersPage />) },
           { path: 'monthly-close', element: withSuspense(<MonthlyClosePage />) },
+          { path: 'organizaciones',  element: withSuspense(<OrganizationsPage />) },
         ],
       },
     ],
